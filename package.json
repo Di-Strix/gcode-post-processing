@@ -1,0 +1,32 @@
+{
+  "name": "gcode-post-processing",
+  "description": "GCode post-processing scripts",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node ./dist/index.js",
+    "build": "webpack",
+    "install": "npm run build && ts-node ./install.ts"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "author": "https://github.com/Di-Strix",
+  "license": "MIT",
+  "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "@types/cli-color": "^2.0.6",
+    "@types/node": "^20.12.12",
+    "@types/yargs": "^17.0.32",
+    "prettier": "^3.2.5",
+    "ts-loader": "^9.5.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4",
+    "webpackbar": "^6.0.1"
+  },
+  "dependencies": {
+    "cli-color": "^2.0.4",
+    "yargs": "^17.7.2"
+  }
+}
