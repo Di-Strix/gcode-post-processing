@@ -1,4 +1,4 @@
-import { GCommand, GCode } from './gcode';
+import { GCode, GCommand } from './gcode';
 
 /**
  * Fan class can process GCode related to the part cooling fan
@@ -14,7 +14,7 @@ export class Fan {
    * @static
    * @readonly
    */
-  public static readonly SUPPORTED_GCODES = [GCommand.SET_FAN_SPEED];
+  public static readonly SUPPORTED_GCODES = [GCommand.SET_FAN_SPEED, GCommand.TURN_OFF_FAN];
 
   /**
    * Current fan speed [0-255]
@@ -37,13 +37,14 @@ export class Fan {
    * @param {GCode} gcode
    */
   exec(gcode: GCode): void {
-    if (gcode.command !== GCommand.SET_FAN_SPEED) return;
-
-    const { S } = gcode.params;
-
-    if (!S) return;
-
-    this.setSpeed(Number(S));
+    if (gcode.command === GCommand.SET_FAN_SPEED) {
+      const { S } = gcode.params;
+      if (S) {
+        this.setSpeed(Number(S));
+      }
+    } else if (gcode.command === GCommand.TURN_OFF_FAN) {
+      this.setSpeed(0);
+    }
   }
 
   /**
