@@ -3,7 +3,7 @@ import webpack from 'webpack';
 import WebpackBar from 'webpackbar';
 
 const config = (env: any, argv: any): webpack.Configuration => ({
-  mode: 'production',
+  mode: argv.mode,
   entry: './src/index.ts',
   target: 'node20',
   devtool: 'source-map',
