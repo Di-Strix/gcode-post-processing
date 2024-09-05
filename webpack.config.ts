@@ -2,7 +2,7 @@ import path from 'path';
 import webpack from 'webpack';
 import WebpackBar from 'webpackbar';
 
-const config: webpack.Configuration = {
+const config = (env: any, argv: any): webpack.Configuration => ({
   mode: 'production',
   entry: './src/index.ts',
   target: 'node20',
@@ -18,6 +18,9 @@ const config: webpack.Configuration = {
     unknownContextCritical: false,
     exprContextCritical: false,
   },
+  optimization: {
+    minimize: argv.mode === 'production',
+  },
   resolve: {
     extensions: ['.ts', '.js'],
   },
@@ -27,6 +30,6 @@ const config: webpack.Configuration = {
     clean: true,
   },
   plugins: [new WebpackBar()],
-};
+});
 
 export default config;
