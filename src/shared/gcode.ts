@@ -7,6 +7,7 @@
 export enum GCommand {
   COMMENT = ';',
   SET_FAN_SPEED = 'M106',
+  TURN_OFF_FAN = 'M107',
   MOVE = 'G1',
   ABSOLUTE_POSITIONING = 'G90',
   RELATIVE_POSITIONING = 'G91',
