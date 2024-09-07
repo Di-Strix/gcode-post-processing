@@ -18,11 +18,11 @@ export class OutputPipe extends Pipe {
    */
   outFilePath: string;
   /**
-   * Opened file descriptor
+   * Stream for writing data to the file
    *
    * @type {number}
    */
-  fileDescriptor: number;
+  writeStream: fs.WriteStream;
 
   /**
    * Creates an instance of OutputPipe.
@@ -34,21 +34,19 @@ export class OutputPipe extends Pipe {
     super();
 
     this.outFilePath = outFilePath;
-    this.fileDescriptor = fs.openSync(outFilePath, 'w');
+    this.writeStream = fs.createWriteStream(outFilePath);
   }
 
   /**
    * @inheritdoc
    */
-  override onWarmup(): void {
-    fs.writeFileSync(this.fileDescriptor, '');
-  }
+  override onWarmup(): void {}
 
   /**
    * @inheritdoc
    */
   override onCooldown(): void {
-    fs.closeSync(this.fileDescriptor);
+    this.writeStream.close();
   }
 
   /**
@@ -57,6 +55,6 @@ export class OutputPipe extends Pipe {
    * @param {GCode} gcode
    */
   override input(gcode: GCode): void {
-    fs.appendFileSync(this.fileDescriptor, gcode.toString());
+    this.writeStream.write(gcode.toString());
   }
 }
