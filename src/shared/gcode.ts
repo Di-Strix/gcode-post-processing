@@ -54,51 +54,43 @@ export class GCode {
    * @param {boolean} [commandOnly=false] Whether to parse only command and skip parameters.
    */
   constructor(encodedCommand: string = '', commandOnly: boolean = false) {
-    if (commandOnly) this.rawCode = encodedCommand;
+    if (commandOnly) {
+      this.rawCode = encodedCommand;
 
-    if (!encodedCommand.trim()) return;
+      const matches = encodedCommand.match(/;|(?:[^ ]+)/);
+      if (matches?.length) this.command = matches[0];
 
-    let commentBegan = false;
-    for (const [index, part] of encodedCommand.split(' ').entries()) {
-      if (!part && !commentBegan) continue;
+      return;
+    }
 
-      const isComment = part.startsWith(GCommand.COMMENT);
+    const matches = encodedCommand.match(/(;.*)?([^ ;]*)/g)?.slice(0, -1);
+    if (!matches || !matches.length) return;
 
-      if (index === 0) {
-        this.command = isComment ? GCommand.COMMENT : part;
+    this.command = matches[0];
 
-        if (commandOnly) break;
-      }
-
-      if (commentBegan || isComment) {
-        commentBegan = true;
-
-        if (GCommand.COMMENT in this.params) this.params[GCommand.COMMENT] += ' ' + part;
-        else this.params[GCommand.COMMENT] = part.substring(1);
-
-        continue;
-      }
-
-      if (index > 0) {
+    matches
+      .slice(1)
+      .filter((v) => !!v)
+      .map((v) => {
         let variable = '',
           value = '';
 
-        if (part.includes('=')) {
-          // Klipper-style
-          [variable, value] = part.split('=');
+        if (!v.startsWith(GCommand.COMMENT) && v.includes('=')) {
+          [variable, value] = v.split('=');
         } else {
-          // RepRap-style
-          [variable, value] = [part[0], part.slice(1)];
+          [variable, value] = [v[0], v.slice(1)];
         }
 
-        this.params[variable.toUpperCase()] = value;
-      }
-    }
+        return { variable, value };
+      })
+      .forEach(({ variable, value }) => {
+        this.params[variable] = value;
+      });
   }
 
   /**
    * Encodes gcode command and its parameters into a string with trailing newline character.
-   * 
+   *
    * If gcode was constructed with `commandOnly = true`, function outputs original string
    *
    * @returns {string}
