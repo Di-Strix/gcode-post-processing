@@ -149,7 +149,7 @@ export class Toolhead {
       this.currentVelocity = Number(F) / 60;
     }
 
-    if (this.positioningMode == GCommand.ABSOLUTE_POSITIONING) {
+    if (this.positioningMode === GCommand.ABSOLUTE_POSITIONING) {
       if (X) {
         const _x = Number(X);
         this.lastMoveDisplacement[0] = _x - this.position[0];
@@ -187,7 +187,7 @@ export class Toolhead {
       }
     }
 
-    if (this.extrusionMode == GCommand.ABSOLUTE_EXTRUSION) {
+    if (this.extrusionMode === GCommand.ABSOLUTE_EXTRUSION) {
       if (E) {
         const _e = Number(E);
         this.lastMoveDisplacement[3] = _e - this.position[3];
