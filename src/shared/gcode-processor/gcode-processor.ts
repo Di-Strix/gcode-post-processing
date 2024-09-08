@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import readline from 'readline';
+import { EventEmitter } from 'stream';
 
 import { GCode, GCommand } from '../gcode';
 import { Pipe } from '../pipe';
@@ -55,12 +56,15 @@ export class GCodeProcessor {
     try {
       pipeline[0].warmup();
 
-      for await (const line of this.readLines(inPath)) {
+      const stream = this.readLines(inPath);
+      stream.on('line', (line) => {
         let gcode = new GCode(line, true);
         if (allSupportedCommands.has(gcode.command as GCommand)) gcode = new GCode(line);
 
         pipeline[0].input(gcode);
-      }
+      });
+
+      await this.eventToPromise(stream, 'close');
     } finally {
       pipeline[0].cooldown();
     }
@@ -106,5 +110,16 @@ export class GCodeProcessor {
     });
 
     return allSupportedCommands;
+  }
+
+  /**
+   * Returns a promise which resolves with payload whenever specified event has happened
+   *
+   * @param eventEmitter event emitter to listen on
+   * @param eventName event name to listen for
+   * @returns Promise
+   */
+  private eventToPromise<T>(eventEmitter: EventEmitter, eventName: string) {
+    return new Promise<T>((resolve) => eventEmitter.once(eventName, resolve));
   }
 }
